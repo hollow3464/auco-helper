@@ -1,0 +1,29 @@
+{
+  "name": "hollow3464/auco_helper_psr",
+  "description": "Auco API Helper",
+  "type": "library",
+  "license": "GPLv3",
+  "autoload": {
+    "psr-4": {
+      "Hollow3464\\AucoHelper\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "David Chamorro",
+      "email": "daved3464@gmail.com"
+    }
+  ],
+  "require": {
+    "guzzlehttp/guzzle": "^7.5"
+  },
+  "require-dev": {
+    "pestphp/pest": "^1.22",
+    "phpstan/phpstan": "^1.9",
+    "relay/relay": "^2.1",
+    "laminas/laminas-diactoros": "^2.24",
+    "laminas/laminas-httphandlerrunner": "^2.4",
+    "vlucas/phpdotenv": "^5.5",
+    "react/http": "^1.8"
+  }
+}
