@@ -7,7 +7,7 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Query;
 use GuzzleHttp\Psr7\Uri;
-use GuzzleHttp\Psr7\UriResolver;
+use GuzzleHttp\Psr7\UriResolver as URL;
 use Hollow3464\AucoHelper\Company\Update;
 use Hollow3464\AucoHelper\Document\Create\Many;
 use Hollow3464\AucoHelper\Document\Create\Prebuild;
@@ -50,9 +50,9 @@ final class AucoHelper
      */
     public function getCompany(): ?array
     {
-        $uri = UriResolver::resolve($this->uri, new Uri('company'));
+        $uri = URL::resolve($this->uri, new Uri('company'));
 
-        $res = $this->client->get($uri, ['auth' => $this->public_key]);
+        $res = $this->client->get($uri, ['headers' => ['Authorization' => $this->public_key]]);
 
         return json_decode($res->getBody(), true);
     }
@@ -67,11 +67,11 @@ final class AucoHelper
      */
     public function updateCompany(Update $data): ?array
     {
-        $uri = UriResolver::resolve($this->uri, new Uri('company'));
+        $uri = URL::resolve($this->uri, new Uri('company'));
 
         $res = $this->client->put($uri, [
             'body' => $data,
-            'auth' => $this->private_key
+            'headers' => ['Authorization' => $this->private_key]
         ]);
 
         return json_decode($res->getBody(), true);
@@ -84,11 +84,11 @@ final class AucoHelper
      */
     public function documentUpload(Upload $data): ?array
     {
-        $uri = UriResolver::resolve($this->uri, new Uri('document/upload'));
+        $uri = URL::resolve($this->uri, new Uri('document/upload'));
 
         $res = $this->client->post($uri, [
             'body' => json_encode($data),
-            'auth' => $this->private_key
+            'headers' => ['Authorization' => $this->private_key]
         ]);
 
         return json_decode($res->getBody(), true);
@@ -100,11 +100,11 @@ final class AucoHelper
      */
     public function documentSave(Save $data)
     {
-        $uri = UriResolver::resolve($this->uri, new Uri('document/save'));
+        $uri = URL::resolve($this->uri, new Uri('document/save'));
 
         $res = $this->client->post($uri, [
             'body' => $data,
-            'auth' => $this->private_key
+            'headers' => ['Authorization' => $this->private_key]
         ]);
 
         return json_decode($res->getBody(), true);
@@ -116,11 +116,11 @@ final class AucoHelper
      */
     public function documentPrebuild(Prebuild $data): ?array
     {
-        $uri = UriResolver::resolve($this->uri, new Uri('document/prebuild'));
+        $uri = URL::resolve($this->uri, new Uri('document/prebuild'));
 
         $res = $this->client->post($uri, [
             'body' => $data,
-            'auth' => $this->private_key
+            'headers' => ['Authorization' => $this->private_key]
         ]);
 
         return json_decode($res->getBody(), true);
@@ -132,11 +132,11 @@ final class AucoHelper
      */
     public function documentMany(Many $data): ?array
     {
-        $uri = UriResolver::resolve($this->uri, new Uri('document/many'));
+        $uri = URL::resolve($this->uri, new Uri('document/many'));
 
         $res = $this->client->post($uri, [
             'body' => $data,
-            'auth' => $this->public_key
+            'headers' => ['Authorization' => $this->public_key]
         ]);
 
         return json_decode($res->getBody(), true);
@@ -147,10 +147,10 @@ final class AucoHelper
      */
     public function getDocument(string $code): ?array
     {
-        $uri = UriResolver::resolve($this->uri, new Uri('document'))
+        $uri = URL::resolve($this->uri, new Uri('document'))
             ->withQuery(Query::build(['code' => $code]));
 
-        $res = $this->client->get($uri, ['auth' => $this->public_key]);
+        $res = $this->client->get($uri, ['headers' => ['Authorization' => $this->public_key]]);
 
         return json_decode($res->getBody(), true);
     }
@@ -160,10 +160,10 @@ final class AucoHelper
      */
     public function getCustomDocuments(string $code)
     {
-        $uri = UriResolver::resolve($this->uri, new Uri('document'))
+        $uri = URL::resolve($this->uri, new Uri('document'))
             ->withQuery(Query::build(['code' => $code, 'custom' => 'true']));
 
-        $res = $this->client->get($uri, ['auth' => $this->public_key]);
+        $res = $this->client->get($uri, ['headers' => ['Authorization' => $this->public_key]]);
 
         return json_decode($res->getBody(), true);
     }
@@ -173,9 +173,9 @@ final class AucoHelper
      */
     public function getTemplates()
     {
-        $uri = UriResolver::resolve($this->uri, new Uri('document'));
+        $uri = URL::resolve($this->uri, new Uri('document'));
 
-        $res = $this->client->get($uri, ['auth' => $this->public_key]);
+        $res = $this->client->get($uri, ['headers' => ['Authorization' => $this->public_key]]);
 
         return json_decode($res->getBody(), true);
     }
@@ -185,11 +185,11 @@ final class AucoHelper
      */
     public function updateDocumentEmail(string $code, string $email)
     {
-        $uri = UriResolver::resolve($this->uri, new Uri('document/email'));
+        $uri = URL::resolve($this->uri, new Uri('document/email'));
 
         $res = $this->client->put($uri, [
             'body' => ['code' => $code, 'email' => $email],
-            'auth' => $this->private_key
+            'headers' => ['Authorization' => $this->private_key]
         ]);
 
         return json_decode($res->getBody(), true);
@@ -200,11 +200,11 @@ final class AucoHelper
      */
     public function addDocumentApprover(string $custom_document_id, Approver $approver)
     {
-        $uri = UriResolver::resolve($this->uri, new Uri('document/approver'));
+        $uri = URL::resolve($this->uri, new Uri('document/approver'));
 
         $res = $this->client->put($uri, [
             'body' => ['documentId' => $custom_document_id, 'approver' => $approver],
-            'auth' => $this->private_key
+            'headers' => ['Authorization' => $this->private_key]
         ]);
 
         return json_decode($res->getBody(), true);
