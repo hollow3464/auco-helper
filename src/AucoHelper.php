@@ -41,7 +41,7 @@ final class AucoHelper
      */
     public function getCompany(): ?array
     {
-        $uri = (new Uri())->withHost($this->url)->withPath('company');
+        $uri = (new Uri($this->url))->withPath('company');
 
         $res = $this->client->get($uri, ['auth' => $this->public_key]);
 
@@ -58,7 +58,7 @@ final class AucoHelper
      */
     public function updateCompany(Update $data): ?array
     {
-        $uri = (new Uri())->withHost($this->url)->withPath('company');
+        $uri = (new Uri($this->url))->withPath('company');
 
         $res = $this->client->put($uri, [
             'body' => $data,
@@ -75,8 +75,8 @@ final class AucoHelper
      */
     public function documentUpload(Upload $data): ?array
     {
-        $uri = (new Uri())
-            ->withHost($this->url)
+        $uri = (new Uri($this->url))
+            
             ->withPath('document/upload');
 
         $res = $this->client->post($uri, [
@@ -93,8 +93,8 @@ final class AucoHelper
      */
     public function documentSave(Save $data)
     {
-        $uri = (new Uri())
-            ->withHost($this->url)
+        $uri = (new Uri($this->url))
+            
             ->withPath('document/save');
 
         $res = $this->client->post($uri, [
@@ -111,8 +111,8 @@ final class AucoHelper
      */
     public function documentPrebuild(Prebuild $data): ?array
     {
-        $uri = (new Uri())
-            ->withHost($this->url)
+        $uri = (new Uri($this->url))
+            
             ->withPath('document/prebuild');
 
         $res = $this->client->post($uri, [
@@ -129,8 +129,8 @@ final class AucoHelper
      */
     public function documentMany(Many $data): ?array
     {
-        $uri = (new Uri())
-            ->withHost($this->url)
+        $uri = (new Uri($this->url))
+            
             ->withPath('document/many');
 
         $res = $this->client->post($uri, [
@@ -146,8 +146,8 @@ final class AucoHelper
      */
     public function getDocument(string $code): ?array
     {
-        $uri = (new Uri())
-            ->withHost($this->url)
+        $uri = (new Uri($this->url))
+            
             ->withPath('document')
             ->withQuery(Query::build(['code' => $code]));
 
@@ -161,8 +161,8 @@ final class AucoHelper
      */
     public function getCustomDocuments(string $code)
     {
-        $uri = (new Uri())
-            ->withHost($this->url)
+        $uri = (new Uri($this->url))
+            
             ->withPath('document')
             ->withQuery(Query::build(['code' => $code, 'custom' => 'true']));
 
@@ -176,7 +176,7 @@ final class AucoHelper
      */
     public function getTemplates()
     {
-        $uri = (new Uri())->withHost($this->url)->withPath('document');
+        $uri = (new Uri($this->url))->withPath('document');
 
         $res = $this->client->get($uri, ['auth' => $this->public_key]);
 
@@ -188,8 +188,8 @@ final class AucoHelper
      */
     public function updateDocumentEmail(string $code, string $email)
     {
-        $uri = (new Uri())
-            ->withHost($this->url)
+        $uri = (new Uri($this->url))
+            
             ->withPath('document')
             ->withPath('email');
 
@@ -206,8 +206,8 @@ final class AucoHelper
      */
     public function addDocumentApprover(string $custom_document_id, Approver $approver)
     {
-        $uri = (new Uri())
-            ->withHost($this->url)
+        $uri = (new Uri($this->url))
+            
             ->withPath('document/approver');
 
         $res = $this->client->put($uri, [
