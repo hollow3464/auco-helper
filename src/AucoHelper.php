@@ -16,7 +16,7 @@ use Hollow3464\AucoHelper\Document\Create\Upload;
 
 final class AucoHelper
 {
-    private Uri $uri = "";
+    private Uri $uri;
 
     public function __construct(
         private readonly Client $client,
