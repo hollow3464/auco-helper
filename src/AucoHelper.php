@@ -22,10 +22,10 @@ final class AucoHelper
         private readonly Client $client,
         private readonly string $public_key,
         private readonly string $private_key,
-        private readonly bool $devel = false
+        bool                    $devel = false
     )
     {
-        $uri = match($devel){
+        $uri = match ($devel) {
             true => "https://dev.auco.ai/v1/ext/",
             false => "https://api.auco.ai/v1/ext/"
         };
@@ -98,7 +98,7 @@ final class AucoHelper
      * @return array{message:string}
      * @throws GuzzleException
      */
-    public function documentSave(Save $data)
+    public function documentSave(Save $data): array
     {
         $uri = URL::resolve($this->uri, new Uri('document/save'));
 
