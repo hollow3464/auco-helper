@@ -4,14 +4,20 @@ namespace Hollow3464\AucoHelper\Document;
 
 use ArrayAccess;
 use Iterator;
+use JsonSerializable;
 use Serializable;
 
 /** @implements Iterator<int, SignProfile> */
-class SignProfileIterator implements ArrayAccess, Iterator, Serializable
+class SignProfileIterator implements ArrayAccess, Iterator, Serializable, JsonSerializable
 {
     /** @var SignProfile[] $items */
     private array $items = [];
     private int $current_index = 0;
+
+    public function jsonSerialize(): array
+    {
+        return $this->items;
+    }
 
     public function add(SignProfile $value): static
     {
