@@ -126,7 +126,12 @@ class SignProfilePositionIterator implements ArrayAccess, Iterator, Serializable
             throw new \InvalidArgumentException();
         }
 
-        $this->items = $data;
+        $this->items = array_map(
+            fn($d) => new SignProfilePosition(
+                $d['page'], $d['x'], $d['y'], $d['w'], $d['h']
+            ),
+            $data
+        );
 
         return clone $this;
     }
