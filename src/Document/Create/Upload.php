@@ -14,15 +14,14 @@ class Upload
         public readonly string   $subject,
         public readonly string   $email,
         public readonly string   $file,
-        public readonly string   $document,
-        public readonly string   $folder,
         public readonly SignProfileIterator    $signProfile,
+        public readonly ?string   $document = null,
+        public readonly ?string   $folder = null,
         public readonly ?bool    $camera = null,
         public readonly ?bool    $otpCode = null,
         public readonly ?int     $remember = null,
         public readonly ?Options $options = null,
 
-    )
-    {
+    ) {
     }
 }

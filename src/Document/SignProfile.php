@@ -9,9 +9,9 @@ class SignProfile
         public readonly string                      $name,
         public readonly string                      $email,
         public readonly string                      $phone,
-        public readonly string                      $order,
-        public readonly string                      $type,
         public readonly SignProfilePositionIterator $position,
+        public readonly string                      $order = '',
+        public readonly string                      $type = '',
     )
     {
     }
