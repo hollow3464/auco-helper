@@ -23,8 +23,7 @@ final class AucoHelper
         private readonly string $public_key,
         private readonly string $private_key,
         bool                    $devel = false
-    )
-    {
+    ) {
         $uri = match ($devel) {
             true => "https://dev.auco.ai/v1/ext/",
             false => "https://api.auco.ai/v1/ext/"
@@ -71,7 +70,10 @@ final class AucoHelper
 
         $res = $this->client->put($uri, [
             'body' => $data,
-            'headers' => ['Authorization' => $this->private_key]
+            'headers' => [
+                'Authorization' => $this->private_key,
+                'Content-type' => 'application/json'
+            ]
         ]);
 
         return json_decode($res->getBody(), true);
@@ -88,7 +90,7 @@ final class AucoHelper
 
         $res = $this->client->post($uri, [
             'body' => json_encode($data),
-            'headers' => ['Authorization' => $this->private_key]
+            'headers' => ['Authorization' => $this->private_key, 'Content-type' => 'application/json']
         ]);
 
         return json_decode($res->getBody(), true);
@@ -104,7 +106,7 @@ final class AucoHelper
 
         $res = $this->client->post($uri, [
             'body' => $data,
-            'headers' => ['Authorization' => $this->private_key]
+            'headers' => ['Authorization' => $this->private_key, 'Content-type' => 'application/json']
         ]);
 
         return json_decode($res->getBody(), true);
@@ -120,7 +122,7 @@ final class AucoHelper
 
         $res = $this->client->post($uri, [
             'body' => $data,
-            'headers' => ['Authorization' => $this->private_key]
+            'headers' => ['Authorization' => $this->private_key, 'Content-type' => 'application/json']
         ]);
 
         return json_decode($res->getBody(), true);
@@ -136,7 +138,7 @@ final class AucoHelper
 
         $res = $this->client->post($uri, [
             'body' => $data,
-            'headers' => ['Authorization' => $this->public_key]
+            'headers' => ['Authorization' => $this->public_key, 'Content-type' => 'application/json']
         ]);
 
         return json_decode($res->getBody(), true);
@@ -204,7 +206,7 @@ final class AucoHelper
 
         $res = $this->client->put($uri, [
             'body' => ['documentId' => $custom_document_id, 'approver' => $approver],
-            'headers' => ['Authorization' => $this->private_key]
+            'headers' => ['Authorization' => $this->private_key, 'Content-type' => 'application/json']
         ]);
 
         return json_decode($res->getBody(), true);
