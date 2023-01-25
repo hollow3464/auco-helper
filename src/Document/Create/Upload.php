@@ -5,8 +5,9 @@ namespace Hollow3464\AucoHelper\Document\Create;
 use Hollow3464\AucoHelper\Document\Options;
 use Hollow3464\AucoHelper\Document\SignProfile;
 use Hollow3464\AucoHelper\Document\SignProfileIterator;
+use JsonSerializable;
 
-class Upload
+class Upload implements JsonSerializable
 {
     public function __construct(
         public readonly string   $name,
@@ -24,4 +25,41 @@ class Upload
 
     ) {
     }
+
+    public function jsonSerialize(): array
+    {
+        $data = [
+            'name' => $this->name,
+            'message' => $this->message,
+            'subject' => $this->subject,
+            'email' => $this->email,
+            'file' => $this->file,
+            'signProfile' => $this->signProfile,    
+        ];
+
+        if ($this->document){
+            $data['document'] = $this->document;
+        }
+
+        if ($this->folder){
+            $data['folder'] = $this->folder;
+        }
+        if ($this->camera){
+            $data['camera'] = $this->camera;
+        }
+
+        if ($this->otpCode){
+            $data['otpCode'] = $this->otpCode;
+        }
+
+        if ($this->remember){
+            $data['remember'] = $this->remember;
+        }
+
+        if ($this->options){
+            $data['options'] = $this->options;
+        }
+        
+        return $data;
+    }    
 }
