@@ -22,9 +22,9 @@ class Options implements JsonSerializable
      *      firma se desarrolle a través de whatsapp.
      */
     public function __construct(
-        public readonly ?string    $camera = null,
-        public readonly ?OTPOption $otpCode = null,
-        public readonly ?bool      $whatsapp = null,
+        public ?string    $camera = null,
+        public ?OTPOption $otpCode = null,
+        public ?bool      $whatsapp = null,
     ) {
     }
 
