@@ -14,8 +14,6 @@ class Save
         public readonly bool     $sign = false,
         public readonly int      $remember = 0,
         public readonly ?Options $options = null,
-
-    )
-    {
+    ) {
     }
 }

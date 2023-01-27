@@ -13,7 +13,6 @@ class Prebuild
         public readonly ?string $parentId = null,
         public readonly ?bool   $sign = null,
         public readonly ?int    $remember = null,
-    )
-    {
+    ) {
     }
 }

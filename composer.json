@@ -24,6 +24,12 @@
     "laminas/laminas-diactoros": "^2.24",
     "laminas/laminas-httphandlerrunner": "^2.4",
     "vlucas/phpdotenv": "^5.5",
-    "react/http": "^1.8"
+    "react/http": "^1.8",
+    "friendsofphp/php-cs-fixer": "^3.13"
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
   }
 }

@@ -9,7 +9,6 @@ final class Update
         public readonly array  $webhookHeader,
         public readonly string $image,
         public readonly UxOptions  $uxOptions,
-    )
-    {
+    ) {
     }
 }

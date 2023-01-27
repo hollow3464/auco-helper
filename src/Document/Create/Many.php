@@ -14,7 +14,6 @@ class Many
         public readonly bool             $camera = false,
         public readonly int              $remember = 0,
         public readonly ?Options $options = null
-    )
-    {
+    ) {
     }
 }

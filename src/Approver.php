@@ -10,8 +10,7 @@ class Approver
         public readonly string $name,
         public readonly string $email,
         int                    $order
-    )
-    {
+    ) {
         if ($order < 0) {
             $order = 0;
         }

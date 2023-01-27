@@ -11,10 +11,9 @@ class SignProfilePosition
         public readonly int $y,
         public readonly int $w,
         public readonly int $h
-    )
-    {
-        if ($page <= 0){
-            throw new \Exception("The page must be at least 1");            
+    ) {
+        if ($page <= 0) {
+            throw new \Exception("The page must be at least 1");
         }
     }
 }
