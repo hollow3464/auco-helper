@@ -3,7 +3,6 @@
 namespace Hollow3464\AucoHelper\Document\Create;
 
 use Hollow3464\AucoHelper\Document\Options;
-use Hollow3464\AucoHelper\Document\SignProfile;
 use Hollow3464\AucoHelper\Document\SignProfileIterator;
 use JsonSerializable;
 
@@ -56,7 +55,7 @@ class Upload implements JsonSerializable
             $data['remember'] = $this->remember;
         }
 
-        if ($this->options) {
+        if ($this->options && count($this->options?->jsonSerialize() ?? [])) {
             $data['options'] = $this->options;
         }
 
