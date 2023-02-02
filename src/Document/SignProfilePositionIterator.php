@@ -8,16 +8,11 @@ use JsonSerializable;
 use Serializable;
 
 /** @implements Iterator<int, SignProfilePosition> */
-class SignProfilePositionIterator implements ArrayAccess, Iterator, Serializable, JsonSerializable
+class SignProfilePositionIterator implements ArrayAccess, Iterator, JsonSerializable
 {
     /** @var SignProfilePosition[] $items */
     private array $items = [];
     private int $current_index = 0;
-
-    public function jsonSerialize(): array
-    {
-        return $this->items;
-    }
 
     public function add(SignProfilePosition $value): static
     {
@@ -113,12 +108,15 @@ class SignProfilePositionIterator implements ArrayAccess, Iterator, Serializable
         unset($this->items[$offset]);
     }
 
-    public function serialize(): string
+    public function setItems(array $data)
     {
-        return json_encode($this->items);
+        $this->items = $data;
+        $this->current_index = 0;
+
+        return $this;
     }
 
-    public function unserialize(string $data): static
+    public static function fromJson(string $data): static
     {
         $data = json_decode($data, true);
 
@@ -126,23 +124,25 @@ class SignProfilePositionIterator implements ArrayAccess, Iterator, Serializable
             throw new \InvalidArgumentException();
         }
 
-        $this->items = array_map(
+        return (new static())->setItems(array_map(
             fn ($d) => new SignProfilePosition(
-                $d['page'], $d['x'], $d['y'], $d['w'], $d['h']
+                $d['page'],
+                $d['x'],
+                $d['y'],
+                $d['w'],
+                $d['h']
             ),
             $data
-        );
-
-        return clone $this;
+        ));
     }
 
-    public function __serialize(): array
+    public function jsonSerialize(): array
     {
         return $this->items;
     }
 
-    public function __unserialize(array $data): void
+    public function __toString()
     {
-        $this->items = $data;
+        return json_encode($this);
     }
 }

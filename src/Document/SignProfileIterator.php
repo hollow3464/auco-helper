@@ -8,16 +8,11 @@ use JsonSerializable;
 use Serializable;
 
 /** @implements Iterator<int, SignProfile> */
-class SignProfileIterator implements ArrayAccess, Iterator, Serializable, JsonSerializable
+class SignProfileIterator implements ArrayAccess, Iterator, JsonSerializable
 {
     /** @var SignProfile[] $items */
     private array $items = [];
     private int $current_index = 0;
-
-    public function jsonSerialize(): array
-    {
-        return $this->items;
-    }
 
     public function add(SignProfile $value): static
     {
@@ -113,12 +108,24 @@ class SignProfileIterator implements ArrayAccess, Iterator, Serializable, JsonSe
         unset($this->items[$offset]);
     }
 
-    public function serialize(): string
+    public function __toString(): string
     {
         return json_encode($this->items);
     }
 
-    public function unserialize(string $data): static
+    public function jsonSerialize(): array
+    {
+        return $this->items;
+    }
+    
+    public function setItems(array $data){
+        $this->items = $data;
+        $this->current_index = 0;
+
+        return $this;
+    }
+
+    public static function fromJson(string $data): static
     {
         $data = json_decode($data, true);
 
@@ -126,18 +133,7 @@ class SignProfileIterator implements ArrayAccess, Iterator, Serializable, JsonSe
             throw new \InvalidArgumentException();
         }
 
-        $this->items = $data;
-
-        return clone $this;
+        return (new static())->setItems($data);
     }
 
-    public function __serialize(): array
-    {
-        return $this->items;
-    }
-
-    public function __unserialize(array $data): void
-    {
-        $this->items = $data;
-    }
 }
