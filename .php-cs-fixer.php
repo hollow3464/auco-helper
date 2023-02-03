@@ -5,8 +5,7 @@ $finder = PhpCsFixer\Finder::create()
 ->in(__DIR__);
 
 return (new PhpCsFixer\Config())->setFinder($finder)->setRules([
-    '@PER' => true,
-    'array_push' => true,
+    '@PER' => true,    
     'array_syntax' => true,
     'no_multiline_whitespace_around_double_arrow' => true,
     'no_whitespace_before_comma_in_array' => true,

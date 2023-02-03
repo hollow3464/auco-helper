@@ -117,8 +117,9 @@ class SignProfileIterator implements ArrayAccess, Iterator, JsonSerializable
     {
         return $this->items;
     }
-    
-    public function setItems(array $data){
+
+    public function setItems(array $data)
+    {
         $this->items = $data;
         $this->current_index = 0;
 
@@ -135,5 +136,4 @@ class SignProfileIterator implements ArrayAccess, Iterator, JsonSerializable
 
         return (new static())->setItems($data);
     }
-
 }

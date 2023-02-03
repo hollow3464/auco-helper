@@ -84,7 +84,7 @@ final class AucoHelper
      * @throws GuzzleException
      * @throws ClientException
      */
-    public function documentUpload(Upload $data): ?array
+    public function documentUpload(Upload $data): ?string
     {
         $uri = URL::resolve($this->uri, new Uri('document/upload'));
 
@@ -93,14 +93,14 @@ final class AucoHelper
             'headers' => ['Authorization' => $this->private_key, 'Content-type' => 'application/json']
         ]);
 
-        return json_decode($res->getBody(), true);
+        return json_decode($res->getBody(), true)['code'] ?? null;
     }
 
     /**
      * @return array{message:string}
      * @throws GuzzleException
      */
-    public function documentSave(Save $data): array
+    public function documentSave(Save $data): ?string
     {
         $uri = URL::resolve($this->uri, new Uri('document/save'));
 
@@ -109,14 +109,14 @@ final class AucoHelper
             'headers' => ['Authorization' => $this->private_key, 'Content-type' => 'application/json']
         ]);
 
-        return json_decode($res->getBody(), true);
+        return json_decode($res->getBody(), true)['code'] ?? null;
     }
 
     /**
      * @return ?array{document:string}
      * @throws GuzzleException
      */
-    public function documentPrebuild(Prebuild $data): ?array
+    public function documentPrebuild(Prebuild $data): ?string
     {
         $uri = URL::resolve($this->uri, new Uri('document/prebuild'));
 
@@ -125,14 +125,14 @@ final class AucoHelper
             'headers' => ['Authorization' => $this->private_key, 'Content-type' => 'application/json']
         ]);
 
-        return json_decode($res->getBody(), true);
+        return json_decode($res->getBody(), true)['document'] ?? null;
     }
 
     /**
      * @return ?array{documents:string}
      * @throws GuzzleException
      */
-    public function documentMany(Many $data): ?array
+    public function documentMany(Many $data): array
     {
         $uri = URL::resolve($this->uri, new Uri('document/many'));
 
@@ -141,7 +141,7 @@ final class AucoHelper
             'headers' => ['Authorization' => $this->public_key, 'Content-type' => 'application/json']
         ]);
 
-        return json_decode($res->getBody(), true);
+        return json_decode($res->getBody(), true)['documents'] ?? [];
     }
 
     /**

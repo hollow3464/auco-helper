@@ -2,8 +2,8 @@
 
 namespace Hollow3464\AucoHelper\Document;
 
-enum Status: string
+enum Status: int
 {
-    case CREATE = 'CREATE';
-    case FINISH = 'FINISH';
+    case CREATE = 1;
+    case FINISH = 2;
 }
