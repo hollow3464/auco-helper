@@ -26,7 +26,7 @@ final class AucoHelper
         bool                    $devel = false
     ) {
         $uri = match ($devel) {
-            true => "https://dev.auco.ai/v1/ext/",
+            true  => "https://dev.auco.ai/v1/ext/",
             false => "https://api.auco.ai/v1/ext/"
         };
 
@@ -52,7 +52,7 @@ final class AucoHelper
      * Actualizar Compañía
      *
      * @return array{"message":"OK"}
-     * 
+     *
      * @throws GuzzleException
      * @throws ClientException
      */
@@ -61,10 +61,10 @@ final class AucoHelper
         $uri = URL::resolve($this->uri, new Uri('company'));
 
         $res = $this->client->put($uri, [
-            'body' => $data,
+            'body'    => $data,
             'headers' => [
                 'Authorization' => $this->private_key,
-                'Content-type' => 'application/json'
+                'Content-type'  => 'application/json'
             ]
         ]);
 
@@ -80,11 +80,11 @@ final class AucoHelper
         $uri = URL::resolve($this->uri, new Uri('document/upload'));
 
         $res = $this->client->post($uri, [
-            'body' => json_encode($data),
+            'body'    => json_encode($data),
             'headers' => ['Authorization' => $this->private_key, 'Content-type' => 'application/json']
         ]);
 
-        return json_decode($res->getBody(), true)['code'] ?? null;
+        return json_decode($res->getBody(), true)['document'] ?? null;
     }
 
     /**
@@ -95,7 +95,7 @@ final class AucoHelper
         $uri = URL::resolve($this->uri, new Uri('document/save'));
 
         $res = $this->client->post($uri, [
-            'body' => $data,
+            'body'    => $data,
             'headers' => ['Authorization' => $this->private_key, 'Content-type' => 'application/json']
         ]);
 
@@ -110,7 +110,7 @@ final class AucoHelper
         $uri = URL::resolve($this->uri, new Uri('document/prebuild'));
 
         $res = $this->client->post($uri, [
-            'body' => $data,
+            'body'    => $data,
             'headers' => ['Authorization' => $this->private_key, 'Content-type' => 'application/json']
         ]);
 
@@ -125,7 +125,7 @@ final class AucoHelper
         $uri = URL::resolve($this->uri, new Uri('document/many'));
 
         $res = $this->client->post($uri, [
-            'body' => $data,
+            'body'    => $data,
             'headers' => ['Authorization' => $this->public_key, 'Content-type' => 'application/json']
         ]);
 
@@ -178,7 +178,7 @@ final class AucoHelper
         $uri = URL::resolve($this->uri, new Uri('document/email'));
 
         $res = $this->client->put($uri, [
-            'body' => ['code' => $code, 'email' => $email],
+            'body'    => ['code' => $code, 'email' => $email],
             'headers' => ['Authorization' => $this->private_key]
         ]);
 
@@ -193,7 +193,7 @@ final class AucoHelper
         $uri = URL::resolve($this->uri, new Uri('document/approver'));
 
         $res = $this->client->put($uri, [
-            'body' => ['documentId' => $custom_document_id, 'approver' => $approver],
+            'body'    => ['documentId' => $custom_document_id, 'approver' => $approver],
             'headers' => ['Authorization' => $this->private_key, 'Content-type' => 'application/json']
         ]);
 

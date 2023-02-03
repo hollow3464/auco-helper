@@ -11,7 +11,7 @@ use Serializable;
 class SignProfileIterator implements ArrayAccess, Iterator, JsonSerializable
 {
     /** @var SignProfile[] $items */
-    private array $items = [];
+    private array $items       = [];
     private int $current_index = 0;
 
     public function add(SignProfile $value): static
@@ -37,7 +37,6 @@ class SignProfileIterator implements ArrayAccess, Iterator, JsonSerializable
 
         return $this;
     }
-
 
     public function current(): ?SignProfile
     {
@@ -120,7 +119,7 @@ class SignProfileIterator implements ArrayAccess, Iterator, JsonSerializable
 
     public function setItems(array $data)
     {
-        $this->items = $data;
+        $this->items         = $data;
         $this->current_index = 0;
 
         return $this;

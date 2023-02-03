@@ -21,18 +21,17 @@ class Upload implements JsonSerializable
         public readonly ?bool               $otpCode = null,
         public readonly ?int                $remember = null,
         public readonly ?Options            $options = null,
-
     ) {
     }
 
     public function jsonSerialize(): array
     {
         $data = [
-            'name' => $this->name,
-            'message' => $this->message,
-            'subject' => $this->subject,
-            'email' => $this->email,
-            'file' => $this->file,
+            'name'        => $this->name,
+            'message'     => $this->message,
+            'subject'     => $this->subject,
+            'email'       => $this->email,
+            'file'        => $this->file,
             'signProfile' => $this->signProfile,
         ];
 

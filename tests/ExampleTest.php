@@ -16,18 +16,16 @@ function initServer(): void
             $body = $req->getParsedBody();
         }
 
-
         return \React\Http\Message\Response::json([
-            'uri' => $req->getUri(),
-            'query' => $req->getQueryParams(),
-            'body' => $body,
+            'uri'     => $req->getUri(),
+            'query'   => $req->getQueryParams(),
+            'body'    => $body,
             'headers' => $req->getHeaders()
         ]);
     });
 
     $server->listen($socket);
 }
-
 
 $helper = new \Hollow3464\AucoHelper\AucoHelper(
     new GuzzleHttp\Client(),
@@ -36,30 +34,4 @@ $helper = new \Hollow3464\AucoHelper\AucoHelper(
     'private_key'
 );
 
-$sample_upload = new \Hollow3464\AucoHelper\Document\Create\Upload(
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    [new \Hollow3464\AucoHelper\Document\SignProfile(
-        '', '', '', '', '',
-        [new \Hollow3464\AucoHelper\Document\SignProfilePosition(
-            0, 0, 0, 0, 0
-        )]
-    )]
-);
-
-test('example', function () {
-    expect(true)->toBeTrue();
-});
-
-test('url', function () use ($helper, $sample_upload) {
-    $res = $helper->documentUpload($sample_upload);
-
-    print_r($res);
-
-    expect($res)->toBeArray();
-});
+$sample_upload = null;

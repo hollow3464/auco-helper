@@ -18,10 +18,10 @@ $server = new HttpServer(function (ServerRequestInterface $req) {
     echo "path: " . $req->getUri()->getPath() . PHP_EOL;
 
     return \React\Http\Message\Response::json([
-        'uri' => (string)$req->getUri(),
-        'path' => $req->getUri()->getPath(),
-        'query' => $req->getQueryParams(),
-        'body' => $body,
+        'uri'     => (string)$req->getUri(),
+        'path'    => $req->getUri()->getPath(),
+        'query'   => $req->getQueryParams(),
+        'body'    => $body,
         'headers' => $req->getHeaders()
     ]);
 });
