@@ -8,7 +8,8 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Query;
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\UriResolver as URL;
-use Hollow3464\AucoHelper\Company\Update;
+use Hollow3464\AucoHelper\Company\CompanyResponse;
+use Hollow3464\AucoHelper\Company\CompanyUpdate;
 use Hollow3464\AucoHelper\Document\Create\Many;
 use Hollow3464\AucoHelper\Document\Create\Prebuild;
 use Hollow3464\AucoHelper\Document\Create\Save;
@@ -35,36 +36,27 @@ final class AucoHelper
     /**
      * Consultar compañía
      *
-     * @return ?array{
-     *     name: string,
-     *     webhook: string,
-     *     webhookHeader: string,
-     *     image: string,
-     *     customImage: boolean,
-     *     uxOptions: array{primaryColor: string, redirectUrl: string}
-     * }
-     *
      * @throws GuzzleException
      * @throws ClientException
      */
-    public function getCompany(): ?array
+    public function getCompany(): CompanyResponse
     {
         $uri = URL::resolve($this->uri, new Uri('company'));
 
         $res = $this->client->get($uri, ['headers' => ['Authorization' => $this->public_key]]);
 
-        return json_decode($res->getBody(), true);
+        return CompanyResponse::fromJson($res->getBody());
     }
 
     /**
      * Actualizar Compañía
      *
-     * @return ?array{ message:string }
-     *
+     * @return array{"message":"OK"}
+     * 
      * @throws GuzzleException
      * @throws ClientException
      */
-    public function updateCompany(Update $data): ?array
+    public function updateCompany(CompanyUpdate $data): ?array
     {
         $uri = URL::resolve($this->uri, new Uri('company'));
 
@@ -80,7 +72,6 @@ final class AucoHelper
     }
 
     /**
-     * @return ?array{ code:string }
      * @throws GuzzleException
      * @throws ClientException
      */
@@ -97,7 +88,6 @@ final class AucoHelper
     }
 
     /**
-     * @return array{message:string}
      * @throws GuzzleException
      */
     public function documentSave(Save $data): ?string
@@ -113,7 +103,6 @@ final class AucoHelper
     }
 
     /**
-     * @return ?array{document:string}
      * @throws GuzzleException
      */
     public function documentPrebuild(Prebuild $data): ?string
@@ -129,7 +118,6 @@ final class AucoHelper
     }
 
     /**
-     * @return ?array{documents:string}
      * @throws GuzzleException
      */
     public function documentMany(Many $data): array
