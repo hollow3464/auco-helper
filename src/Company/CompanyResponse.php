@@ -8,8 +8,7 @@ class CompanyResponse
         public string $name,
         public string $webhook,
         public string $webhookHeader,
-        public string $image,
-        public bool $customImage,
+        public string $image,        
         public UxOptions $uxOptions
     ) {
     }
@@ -22,11 +21,10 @@ class CompanyResponse
             $data->name,
             $data->webhook,
             $data->webhookHeader,
-            $data->image,
-            $data->customImage,
+            $data->image,            
             new UxOptions(
-                $data->primaryColor,
-                $data->redirectUrl
+                $data->uxOptions->primaryColor,
+                $data->uxOptions->redirectUrl
             )
         );
     }
