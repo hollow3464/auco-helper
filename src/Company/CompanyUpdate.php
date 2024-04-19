@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hollow3464\AucoHelper\Company;
 
 use JsonSerializable;
@@ -7,14 +9,13 @@ use JsonSerializable;
 final class CompanyUpdate implements JsonSerializable
 {
     public function __construct(
-        public readonly ?string     $webhook = null,
-        public readonly ?array      $webhookHeader = null,
-        public readonly ?string     $image = null,
-        public readonly ?UxOptions  $uxOptions = null,
-    ) {
-    }
+        public readonly ?string $image = null,
+        public readonly ?string $webhook = null,
+        public readonly ?WebhookHeader $webhookHeader = null,
+        public readonly ?UxOptions $uxOptions = null,
+    ) {}
 
-    public function jsonSerialize(): object
+    public function jsonSerialize(): mixed
     {
         $out = [];
 
@@ -30,6 +31,10 @@ final class CompanyUpdate implements JsonSerializable
             $out['uxOptions'] = $this->uxOptions;
         }
 
-        return (object) $out;
+        if ($this->webhookHeader) {
+            $out['webhookHeader'] = $this->webhookHeader;
+        }
+
+        return $out;
     }
 }

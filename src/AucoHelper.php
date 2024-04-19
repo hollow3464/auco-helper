@@ -1,202 +1,323 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hollow3464\AucoHelper;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Psr7\Query;
-use GuzzleHttp\Psr7\Uri;
-use GuzzleHttp\Psr7\UriResolver as URL;
 use Hollow3464\AucoHelper\Company\CompanyResponse;
 use Hollow3464\AucoHelper\Company\CompanyUpdate;
 use Hollow3464\AucoHelper\Document\Create\Many;
 use Hollow3464\AucoHelper\Document\Create\Prebuild;
 use Hollow3464\AucoHelper\Document\Create\Save;
 use Hollow3464\AucoHelper\Document\Create\Upload;
+use Hollow3464\AucoHelper\Exceptions\CompanyNotFoundException;
+use Hollow3464\AucoHelper\Exceptions\UnauthorizedException;
+use Hollow3464\AucoHelper\Exceptions\Messages\UnauthorizedMessage;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 
 final class AucoHelper
 {
-    private Uri $uri;
+    private string $baseUrl;
 
     public function __construct(
-        private readonly Client $client,
-        private readonly string $public_key,
-        private readonly string $private_key,
-        bool                    $devel = false
+        private readonly ClientInterface $http,
+        private readonly RequestFactoryInterface $reqs,
+        private readonly StreamFactoryInterface $streams,
+        private readonly string $pubKey,
+        private readonly string $prvKey,
+        bool $devel = true
     ) {
-        $uri = match ($devel) {
-            true  => "https://dev.auco.ai/v1/ext/",
-            false => "https://api.auco.ai/v1/ext/"
-        };
-
-        $this->uri = new Uri($uri);
+        $this->baseUrl = 'https://api.auco.ai/v1/ext';
+        if ($devel) {
+            $this->baseUrl = 'https://dev.auco.ai/v1/ext';
+        }
     }
 
     /**
      * Consultar compañía
      *
-     * @throws GuzzleException
-     * @throws ClientException
+     * @throws UnauthorizedException
+     * @throws CompanyNotFoundException
+     * @throws ClientExceptionInterface
      */
     public function getCompany(): CompanyResponse
     {
-        $uri = URL::resolve($this->uri, new Uri('company'));
+        $req = $this->withPubKey(
+            $this->reqs->createRequest('GET', $this->baseUrl . '/company')
+        );
 
-        $res = $this->client->get($uri, ['headers' => ['Authorization' => $this->public_key]]);
+        $res = $this->http->sendRequest($req);
 
-        return CompanyResponse::fromJson($res->getBody());
+        if ($res->getStatusCode() === 401) {
+            $this->handlerUnauthorized($req, $res);
+        }
+
+        if ($res->getStatusCode() >= 400) {
+            throw new CompanyNotFoundException($req, $res);
+        }
+
+        return CompanyResponse::fromJson($res->getBody()->getContents());
     }
 
     /**
      * Actualizar Compañía
      *
-     * @return array{"message":"OK"}
+     * @return array{"message":"OK"}|null
      *
-     * @throws GuzzleException
-     * @throws ClientException
+     * @throws ClientExceptionInterface
      */
     public function updateCompany(CompanyUpdate $data): ?array
     {
-        $uri = URL::resolve($this->uri, new Uri('company'));
+        $res = $this->http->sendRequest(
+            $this->withPrivKey(
+                $this->reqs->createRequest('PUT', $this->baseUrl . '/company')
+                    ->withHeader('Content-type', 'application/json')
+                    ->withBody($this->streams->createStream(
+                        (string) json_encode($data)
+                    ))
+            )
+        );
 
-        $res = $this->client->put($uri, [
-            'body'    => $data,
-            'headers' => [
-                'Authorization' => $this->private_key,
-                'Content-type'  => 'application/json'
-            ]
-        ]);
+        $out = json_decode($res->getBody()->getContents(), true);
+        if (!$out) {
+            return null;
+        }
+        if (!is_array($out)) {
+            return null;
+        }
+        if (!isset($out['message'])) {
+            return null;
+        }
 
-        return json_decode($res->getBody(), true);
+        return $out;
     }
 
     /**
-     * @throws GuzzleException
-     * @throws ClientException
+     * @throws ClientExceptionInterface
      */
     public function documentUpload(Upload $data): ?string
     {
-        $uri = URL::resolve($this->uri, new Uri('document/upload'));
+        $res = $this->http->sendRequest(
+            $this->withPrivKey(
+                $this->reqs->createRequest('POST', $this->baseUrl . '/document/upload')
+                    ->withHeader('Content-type', 'application/json')
+                    ->withBody($this->streams->createStream((string) json_encode($data)))
+            )
+        );
 
-        $res = $this->client->post($uri, [
-            'body'    => json_encode($data),
-            'headers' => ['Authorization' => $this->private_key, 'Content-type' => 'application/json']
-        ]);
+        $out = json_decode($res->getBody()->getContents(), true);
+        if (!$out) {
+            return null;
+        }
 
-        return json_decode($res->getBody(), true)['document'] ?? null;
+        if (!is_array($out)) {
+            return null;
+        }
+
+        return $out['document'] ?? null;
     }
 
-    /**
-     * @throws GuzzleException
-     */
     public function documentSave(Save $data): ?string
     {
-        $uri = URL::resolve($this->uri, new Uri('document/save'));
+        $res = $this->http->sendRequest(
+            $this->withPrivKey(
+                $this->reqs->createRequest('POST', $this->baseUrl . '/document/save')
+                    ->withHeader('Content-type', 'application/json')
+                    ->withBody($this->streams->createStream((string) json_encode($data)))
+            )
+        );
 
-        $res = $this->client->post($uri, [
-            'body'    => $data,
-            'headers' => ['Authorization' => $this->private_key, 'Content-type' => 'application/json']
-        ]);
+        $out = json_decode($res->getBody()->getContents(), true);
 
-        return json_decode($res->getBody(), true)['code'] ?? null;
+        if (!$out) {
+            return null;
+        }
+
+        if (!is_array($out)) {
+            return null;
+        }
+
+        return $out['code'] ?? null;
     }
 
-    /**
-     * @throws GuzzleException
-     */
     public function documentPrebuild(Prebuild $data): ?string
     {
-        $uri = URL::resolve($this->uri, new Uri('document/prebuild'));
+        $res = $this->http->sendRequest(
+            $this->withPrivKey(
+                $this->reqs->createRequest('POST', $this->baseUrl . '/document/prebuild')
+                    ->withHeader('Content-type', 'application/json')
+                    ->withBody($this->streams->createStream((string) json_encode($data)))
+            )
+        );
 
-        $res = $this->client->post($uri, [
-            'body'    => $data,
-            'headers' => ['Authorization' => $this->private_key, 'Content-type' => 'application/json']
-        ]);
+        $out = json_decode($res->getBody()->getContents(), true);
+        if (!$out) {
+            return null;
+        }
+        if (!is_array($out)) {
+            return null;
+        }
 
-        return json_decode($res->getBody(), true)['document'] ?? null;
+        return $out['document'] ?? null;
     }
 
     /**
-     * @throws GuzzleException
+     * @return array<string,mixed>
+     * @throws ClientExceptionInterface
      */
     public function documentMany(Many $data): array
     {
-        $uri = URL::resolve($this->uri, new Uri('document/many'));
+        $res = $this->http->sendRequest(
+            $this->withPubKey(
+                $this->reqs->createRequest('POST', $this->baseUrl . '/document/many')
+                    ->withHeader('Content-type', 'application/json')
+                    ->withBody($this->streams->createStream((string) json_encode($data)))
+            )
+        );
 
-        $res = $this->client->post($uri, [
-            'body'    => $data,
-            'headers' => ['Authorization' => $this->public_key, 'Content-type' => 'application/json']
-        ]);
-
-        return json_decode($res->getBody(), true)['documents'] ?? [];
+        $out = json_decode($res->getBody()->getContents(), true);
+        if (!$out) {
+            return [];
+        }
+        if (!is_array($out)) {
+            return [];
+        }
+        return $out['documents'] ?? [];
     }
 
     /**
-     * @throws GuzzleException
+     * @return array<string,mixed>|null
+     * @throws ClientExceptionInterface
      */
     public function getDocument(string $code): ?array
     {
-        $uri = URL::resolve($this->uri, new Uri('document'))
-            ->withQuery(Query::build(['code' => $code]));
+        $res = $this->http->sendRequest(
+            $this->withPubKey(
+                $this->reqs->createRequest('GET', $this->baseUrl . '/document?code=' . $code)
+            )
+        );
 
-        $res = $this->client->get($uri, ['headers' => ['Authorization' => $this->public_key]]);
+        $out = json_decode($res->getBody()->getContents(), true);
+        if (!$out) {
+            return null;
+        }
+        if (!is_array($out)) {
+            return null;
+        }
 
-        return json_decode($res->getBody(), true);
+        return $out;
     }
 
     /**
-     * @throws GuzzleException
+     * @return array<string,mixed>
+     * @throws ClientExceptionInterface
      */
-    public function getCustomDocuments(string $code)
+    public function getCustomDocuments(string $code): array
     {
-        $uri = URL::resolve($this->uri, new Uri('document'))
-            ->withQuery(Query::build(['code' => $code, 'custom' => 'true']));
+        $res = $this->http->sendRequest(
+            $this->withPubKey(
+                $this->reqs->createRequest('GET', $this->baseUrl . '/document?custom=true&code=' . $code)
+            )
+        );
 
-        $res = $this->client->get($uri, ['headers' => ['Authorization' => $this->public_key]]);
+        $out = json_decode($res->getBody()->getContents(), true);
+        if (!$out) {
+            return [];
+        }
+        if (!is_array($out)) {
+            return [];
+        }
 
-        return json_decode($res->getBody(), true);
+        return $out;
     }
 
     /**
-     * @throws GuzzleException
+     * @return array<string,mixed>
+     * @throws ClientExceptionInterface
      */
-    public function getTemplates()
+    public function getTemplates(): array
     {
-        $uri = URL::resolve($this->uri, new Uri('document'));
+        $res = $this->http->sendRequest(
+            $this->withPubKey(
+                $this->reqs->createRequest('GET', $this->baseUrl . '/document')
+            )
+        );
 
-        $res = $this->client->get($uri, ['headers' => ['Authorization' => $this->public_key]]);
+        $out = json_decode($res->getBody()->getContents(), true);
+        if (!$out) {
+            return [];
+        }
+        if (!is_array($out)) {
+            return [];
+        }
 
-        return json_decode($res->getBody(), true);
+        return $out;
     }
 
     /**
-     * @throws GuzzleException
+     * @return string
+     * @throws ClientExceptionInterface
      */
-    public function updateDocumentEmail(string $code, string $email)
+    public function updateDocumentEmail(string $code, string $email): string
     {
-        $uri = URL::resolve($this->uri, new Uri('document/email'));
+        $res = $this->http->sendRequest(
+            $this->withPrivKey(
+                $this->reqs->createRequest('PUT', $this->baseUrl . '/document/email')
+                    ->withHeader('Content-type', 'application/json')
+                    ->withBody($this->streams->createStream((string) json_encode(
+                        ['code' => $code, 'email' => $email]
+                    )))
+            )
+        );
+        $out = json_decode($res->getBody()->getContents(), true);
+        if (!$out) {
+            return '';
+        }
+        if (!is_string($out)) {
+            return '';
+        }
 
-        $res = $this->client->put($uri, [
-            'body'    => ['code' => $code, 'email' => $email],
-            'headers' => ['Authorization' => $this->private_key]
-        ]);
-
-        return json_decode($res->getBody(), true);
+        return $out;
     }
 
     /**
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
      */
-    public function addDocumentApprover(string $custom_document_id, Approver $approver)
+    public function addDocumentApprover(string $custom_document_id, Approver $approver): mixed
     {
-        $uri = URL::resolve($this->uri, new Uri('document/approver'));
+        $res = $this->http->sendRequest(
+            $this->withPrivKey(
+                $this->reqs->createRequest('PUT', $this->baseUrl . '/document/approver')
+                    ->withHeader('Content-type', 'application/json')
+                    ->withBody($this->streams->createStream((string) json_encode([
+                        'documentId' => $custom_document_id,
+                        'approver' => $approver,
+                    ])))
+            )
+        );
 
-        $res = $this->client->put($uri, [
-            'body'    => ['documentId' => $custom_document_id, 'approver' => $approver],
-            'headers' => ['Authorization' => $this->private_key, 'Content-type' => 'application/json']
-        ]);
+        return json_decode($res->getBody()->getContents(), true);
+    }
 
-        return json_decode($res->getBody(), true);
+    private function withPubKey(RequestInterface $req): RequestInterface
+    {
+        return $req->withHeader('Authorization', $this->pubKey);
+    }
+
+    private function withPrivKey(RequestInterface $req): RequestInterface
+    {
+        return $req->withHeader('Authorization', $this->prvKey);
+    }
+
+    private function handlerUnauthorized(RequestInterface $req, ResponseInterface $res): never
+    {
+        /** @var array<string,string> */
+        $body = json_decode($res->getBody()->getContents(), true);
+        throw new UnauthorizedException($req, $res, new UnauthorizedMessage($body['message']));
     }
 }
