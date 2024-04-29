@@ -11,4 +11,5 @@ enum DocumentStatus: string
     case NOTIFICATION = 'NOTIFICATION';
     case REJECT = 'REJECT';
     case BLOCKED = 'BLOCKED';
+    case NO_STATUS = '';
 }

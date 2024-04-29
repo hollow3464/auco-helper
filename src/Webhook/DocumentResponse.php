@@ -10,6 +10,6 @@ final class DocumentResponse
         public string $code,
         public string $name,
         public string $url,
-        public DocumentStatus $status,
+        public ?DocumentStatus $status = null,
     ) {}
 }
