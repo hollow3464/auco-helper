@@ -19,18 +19,21 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Log\LoggerInterface;
+use Exception;
 
 final class AucoHelper
 {
     private string $baseUrl;
 
     public function __construct(
-        private readonly ClientInterface $http,
-        private readonly RequestFactoryInterface $reqs,
-        private readonly StreamFactoryInterface $streams,
-        private readonly string $pubKey,
-        private readonly string $prvKey,
-        bool $devel = true
+        private ClientInterface $http,
+        private RequestFactoryInterface $reqs,
+        private StreamFactoryInterface $streams,
+        private string $pubKey,
+        private string $prvKey,
+        private ?LoggerInterface $logger = null,
+        bool $devel = true,
     ) {
         $this->baseUrl = 'https://api.auco.ai/v1/ext';
         if ($devel) {
@@ -48,7 +51,7 @@ final class AucoHelper
     public function getCompany(): CompanyResponse
     {
         $req = $this->withPubKey(
-            $this->reqs->createRequest('GET', $this->baseUrl . '/company')
+            $this->reqs->createRequest('GET', $this->baseUrl . '/company'),
         );
 
         $res = $this->http->sendRequest($req);
@@ -78,9 +81,9 @@ final class AucoHelper
                 $this->reqs->createRequest('PUT', $this->baseUrl . '/company')
                     ->withHeader('Content-type', 'application/json')
                     ->withBody($this->streams->createStream(
-                        (string) json_encode($data)
-                    ))
-            )
+                        (string) json_encode($data),
+                    )),
+            ),
         );
 
         $out = json_decode($res->getBody()->getContents(), true);
@@ -102,24 +105,33 @@ final class AucoHelper
      */
     public function documentUpload(Upload $data): ?string
     {
-        $res = $this->http->sendRequest(
+        $response = $this->http->sendRequest(
             $this->withPrivKey(
                 $this->reqs->createRequest('POST', $this->baseUrl . '/document/upload')
                     ->withHeader('Content-type', 'application/json')
-                    ->withBody($this->streams->createStream((string) json_encode($data)))
-            )
+                    ->withBody($this->streams->createStream((string) json_encode($data))),
+            ),
         );
 
-        $out = json_decode($res->getBody()->getContents(), true);
-        if (!$out) {
-            return null;
+        /** @var array<string,string> $content */
+        $content = (array) json_decode($response->getBody()->getContents(), true);
+
+        if ($this->logger) {
+            $this->logger->debug(
+                'AUCO Document Upload Response',
+                ['content' => $content],
+            );
         }
 
-        if (!is_array($out)) {
-            return null;
+        if (!count($content)) {
+            throw new Exception('No content');
         }
 
-        return $out['document'] ?? null;
+        if ($response->getStatusCode() !== 200) {
+            throw new Exception($content['message'] ?? 'Unknown error');
+        }
+
+        return $content['code'] ?? $content['document'] ?? null;
     }
 
     public function documentSave(Save $data): ?string
@@ -128,8 +140,8 @@ final class AucoHelper
             $this->withPrivKey(
                 $this->reqs->createRequest('POST', $this->baseUrl . '/document/save')
                     ->withHeader('Content-type', 'application/json')
-                    ->withBody($this->streams->createStream((string) json_encode($data)))
-            )
+                    ->withBody($this->streams->createStream((string) json_encode($data))),
+            ),
         );
 
         $out = json_decode($res->getBody()->getContents(), true);
@@ -151,8 +163,8 @@ final class AucoHelper
             $this->withPrivKey(
                 $this->reqs->createRequest('POST', $this->baseUrl . '/document/prebuild')
                     ->withHeader('Content-type', 'application/json')
-                    ->withBody($this->streams->createStream((string) json_encode($data)))
-            )
+                    ->withBody($this->streams->createStream((string) json_encode($data))),
+            ),
         );
 
         $out = json_decode($res->getBody()->getContents(), true);
@@ -176,8 +188,8 @@ final class AucoHelper
             $this->withPubKey(
                 $this->reqs->createRequest('POST', $this->baseUrl . '/document/many')
                     ->withHeader('Content-type', 'application/json')
-                    ->withBody($this->streams->createStream((string) json_encode($data)))
-            )
+                    ->withBody($this->streams->createStream((string) json_encode($data))),
+            ),
         );
 
         $out = json_decode($res->getBody()->getContents(), true);
@@ -198,8 +210,8 @@ final class AucoHelper
     {
         $res = $this->http->sendRequest(
             $this->withPubKey(
-                $this->reqs->createRequest('GET', $this->baseUrl . '/document?code=' . $code)
-            )
+                $this->reqs->createRequest('GET', $this->baseUrl . '/document?code=' . $code),
+            ),
         );
 
         $out = json_decode($res->getBody()->getContents(), true);
@@ -221,8 +233,8 @@ final class AucoHelper
     {
         $res = $this->http->sendRequest(
             $this->withPubKey(
-                $this->reqs->createRequest('GET', $this->baseUrl . '/document?custom=true&code=' . $code)
-            )
+                $this->reqs->createRequest('GET', $this->baseUrl . '/document?custom=true&code=' . $code),
+            ),
         );
 
         $out = json_decode($res->getBody()->getContents(), true);
@@ -244,8 +256,8 @@ final class AucoHelper
     {
         $res = $this->http->sendRequest(
             $this->withPubKey(
-                $this->reqs->createRequest('GET', $this->baseUrl . '/document')
-            )
+                $this->reqs->createRequest('GET', $this->baseUrl . '/document'),
+            ),
         );
 
         $out = json_decode($res->getBody()->getContents(), true);
@@ -270,9 +282,9 @@ final class AucoHelper
                 $this->reqs->createRequest('PUT', $this->baseUrl . '/document/email')
                     ->withHeader('Content-type', 'application/json')
                     ->withBody($this->streams->createStream((string) json_encode(
-                        ['code' => $code, 'email' => $email]
-                    )))
-            )
+                        ['code' => $code, 'email' => $email],
+                    ))),
+            ),
         );
         $out = json_decode($res->getBody()->getContents(), true);
         if (!$out) {
@@ -297,8 +309,8 @@ final class AucoHelper
                     ->withBody($this->streams->createStream((string) json_encode([
                         'documentId' => $custom_document_id,
                         'approver' => $approver,
-                    ])))
-            )
+                    ]))),
+            ),
         );
 
         return json_decode($res->getBody()->getContents(), true);
