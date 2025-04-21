@@ -18,6 +18,6 @@ final class Many
         public readonly array $documents,
         public readonly bool $camera = false,
         public readonly int $remember = 0,
-        public readonly ?Options $options = null
+        public readonly ?Options $options = null,
     ) {}
 }

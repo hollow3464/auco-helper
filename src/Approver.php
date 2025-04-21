@@ -11,7 +11,7 @@ final class Approver
     public function __construct(
         public readonly string $name,
         public readonly string $email,
-        int $order
+        int $order,
     ) {
         if ($order < 0) {
             $order = 0;

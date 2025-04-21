@@ -14,7 +14,7 @@ describe("AucoHelperTest", function () {
         streams: $httpFactory,
         pubKey: $_ENV['PUBKEY'],
         prvKey: $_ENV['PRVKEY'],
-        devel: false
+        devel: false,
     );
 
     it("should get company", function () use ($handler) {

@@ -12,7 +12,7 @@ final class CompanyNotFoundException extends Exception
 {
     public function __construct(
         public readonly RequestInterface $request,
-        public readonly ResponseInterface $response
+        public readonly ResponseInterface $response,
     ) {
         parent::__construct('Company not found');
     }

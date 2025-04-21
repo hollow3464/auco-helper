@@ -7,6 +7,6 @@ namespace Hollow3464\AucoHelper\Exceptions\Messages;
 final class UnauthorizedMessage
 {
     public function __construct(
-        public readonly string $message
+        public readonly string $message,
     ) {}
 }

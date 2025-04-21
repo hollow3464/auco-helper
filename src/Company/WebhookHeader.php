@@ -8,6 +8,6 @@ final class WebhookHeader
 {
     public function __construct(
         public readonly string $key,
-        public readonly string $value
+        public readonly string $value,
     ) {}
 }

@@ -11,7 +11,7 @@ final class CompanyResponse
         public string $image,
         public string $webhook,
         public ?WebhookHeader $webhookHeader,
-        public ?UxOptions $uxOptions
+        public ?UxOptions $uxOptions,
     ) {}
 
     public static function fromJson(string $json): self
@@ -32,7 +32,7 @@ final class CompanyResponse
         if (!is_string($data['webhookHeader'])) {
             $webhookHeader = new WebhookHeader(
                 $data['webhookHeader']['key'],
-                $data['webhookHeader']['value']
+                $data['webhookHeader']['value'],
             );
         }
 
@@ -40,7 +40,7 @@ final class CompanyResponse
         if (isset($data['uxOptions'])) {
             $uxOptions = new UxOptions(
                 $data['uxOptions']['primaryColor'] ?? null,
-                $data['uxOptions']['redirectUrl'] ?? null
+                $data['uxOptions']['redirectUrl'] ?? null,
             );
         }
         return new self(
@@ -48,7 +48,7 @@ final class CompanyResponse
             image: $data['image'],
             webhook: $data['webhook'],
             webhookHeader: $webhookHeader,
-            uxOptions: $uxOptions
+            uxOptions: $uxOptions,
         );
     }
 }

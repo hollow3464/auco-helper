@@ -14,7 +14,7 @@ final class UnauthorizedException extends Exception
     public function __construct(
         public readonly RequestInterface $request,
         public readonly ResponseInterface $response,
-        public readonly UnauthorizedMessage $responseMessage
+        public readonly UnauthorizedMessage $responseMessage,
     ) {
         parent::__construct($responseMessage->message);
     }
