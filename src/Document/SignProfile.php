@@ -4,17 +4,27 @@ declare(strict_types=1);
 
 namespace Hollow3464\AucoHelper\Document;
 
-final class SignProfile
+final class SignProfile implements \JsonSerializable
 {
     /**
      * @param array<SignProfilePosition> $position
      */
     public function __construct(
-        public readonly string $name,
-        public readonly string $email,
-        public readonly string $phone,
-        public readonly array $position,
-        public readonly string $order = '',
-        public readonly string $type = '',
+        public string $name,
+        public string $email,
+        public string $phone = '',
+        public string $order = '',
+        public string $type = '',
+        public string $label = '',
+        public array $position = [],
     ) {}
+
+    public function jsonSerialize(): mixed
+    {
+        $out = (array) $this;
+
+        $out = array_filter($out, fn($value) => (bool) $value);
+
+        return $out;
+    }
 }

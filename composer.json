@@ -2,8 +2,8 @@
   "name": "hollow3464/auco-helper",
   "description": "Auco API Helper",
   "type": "library",
-  "license": "GPLv3",
-  "version": "2.0.5",
+  "license": "MIT",
+  "version": "2.0.6",
   "autoload": {
     "psr-4": {
       "Hollow3464\\AucoHelper\\": "src/"

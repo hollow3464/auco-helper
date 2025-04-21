@@ -6,15 +6,15 @@ namespace Hollow3464\AucoHelper\Document;
 
 use Exception;
 
-final class SignProfilePosition
+final readonly class SignProfilePosition
 {
     /** @throws Exception */
     public function __construct(
-        public readonly int $page,
-        public readonly int $x,
-        public readonly int $y,
-        public readonly int $w,
-        public readonly int $h,
+        public int $page,
+        public int $x,
+        public int $y,
+        public int $w,
+        public int $h,
     ) {
         if ($page <= 0) {
             throw new Exception('The page must be at least 1');
